@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.generator.config.ConstVal;
  */
 public interface MyConstVal extends ConstVal {
     String CONTROLLER = "Resource";
-    String SUPER_DTO_MAPPER_CLASS = "";
+    String MAPPER = "Dao";
 }

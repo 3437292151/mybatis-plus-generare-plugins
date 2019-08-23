@@ -3,6 +3,9 @@ package ${package.Service}.dto;
 <#list table.importPackages as pkg>
 import ${pkg};
 </#list>
+<#if cfg.superDtoClass??>
+import ${cfg.superDtoClassPackage}.${cfg.superDtoClass};
+</#if>
 <#if swagger2>
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -23,7 +26,7 @@ import lombok.experimental.Accessors;
  */
 <#if entityLombokModel>
 @Data
-    <#if superEntityClass??>
+    <#if cfg.superDtoClass??>
 @EqualsAndHashCode(callSuper = true)
     <#else>
 @EqualsAndHashCode(callSuper = false)
@@ -33,12 +36,12 @@ import lombok.experimental.Accessors;
 <#if swagger2>
 @ApiModel(value="${entity}DTO对象", description="${table.comment!}")
 </#if>
-<#if superEntityClass??>
-public class ${entity}DTO extends ${superEntityClass}<#if activeRecord><${entity}DTO></#if> {
+<#if cfg.superDtoClass??>
+public class ${entity}DTO extends ${cfg.superDtoClass}<#if activeRecord><${entity}DTO></#if> {
 <#elseif activeRecord>
 public class ${entity}DTO extends Model<${entity}DTO> {
 <#else>
-public class ${entity}DTO implements Serializable {
+public class ${entity}DTO {
 </#if>
 
 <#if entitySerialVersionUID>

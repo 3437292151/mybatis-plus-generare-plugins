@@ -3,8 +3,13 @@ package com.yu.generator.config.builder;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.builder.ConfigBuilder;
+import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.yu.generator.config.MyConstVal;
-import com.yu.generator.config.MyStrategyConfig;
+import com.yu.generator.config.po.MyTableInfo;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
+
+import java.util.List;
 
 /**
  * @Auther: yuchanglong
@@ -13,9 +18,12 @@ import com.yu.generator.config.MyStrategyConfig;
  */
 public class MyConfigBuilder extends ConfigBuilder {
 
-    private String superDtoClass ;
+    /**
+     * 数据库表信息
+     */
+    private List<MyTableInfo> tableInfoList;
 
-    private String superDtoMapperClass;
+    private static Log log = new SystemStreamLog();
 
     /**
      * 在构造器中处理配置
@@ -27,8 +35,9 @@ public class MyConfigBuilder extends ConfigBuilder {
      * @param globalConfig     全局配置
      */
     public MyConfigBuilder(PackageConfig packageConfig, DataSourceConfig dataSourceConfig, StrategyConfig strategyConfig, TemplateConfig template, GlobalConfig globalConfig) {
+        //super();
         super(packageConfig, dataSourceConfig, strategyConfig, template, globalConfig);
-
+        super.getTableInfoList();
         handlerStrategy(strategyConfig, globalConfig);
     }
 
@@ -38,8 +47,9 @@ public class MyConfigBuilder extends ConfigBuilder {
      * @param config StrategyConfig
      */
     private void handlerStrategy(StrategyConfig config, GlobalConfig globalConfig) {
-        processTypes(config);
+        log.info("config: "+ config);
         this.getTableInfoList().forEach(e -> {
+            e.setMapperName(e.getEntityName() + MyConstVal.MAPPER);
             if (StringUtils.isNotEmpty(globalConfig.getServiceName())) {
                 e.setServiceName(String.format(globalConfig.getServiceName(), e.getEntityName()));
             } else {
@@ -51,20 +61,6 @@ public class MyConfigBuilder extends ConfigBuilder {
                 e.setControllerName(e.getEntityName() + MyConstVal.CONTROLLER);
             }
         });
-    }
-
-    /**
-     * 处理superClassName,IdClassType,IdStrategy配置
-     *
-     * @param config 策略配置
-     */
-    private void processTypes(StrategyConfig config) {
-
-        if (config instanceof MyStrategyConfig){
-            MyStrategyConfig myStrategyConfig = (MyStrategyConfig) config;
-            superDtoClass = myStrategyConfig.getSuperDtoClass();
-            superDtoMapperClass = myStrategyConfig.getSuperDtoMapperClass();
-        }
     }
 
 }

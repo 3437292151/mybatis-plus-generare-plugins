@@ -1,8 +1,8 @@
 package ${package.Service}.mapper;
 
 import ${package.Entity}.${entity};
-
 import ${package.Service}.dto.${entity}DTO;
+import ${cfg.superEntityMapperClassPackage}.${cfg.superEntityMapperClass};
 
 import org.mapstruct.Mapper;
 
@@ -18,7 +18,7 @@ import org.mapstruct.Mapper;
 <#if kotlin>
 interface ${table.mapperName} : ${superMapperClass}<${entity}>
 <#else>
-public interface ${table.mapperName} extends ${cfg.superServiceMapperClass}<${entity}DTO, ${entity}> {
+public interface ${table.mapperName} extends ${cfg.superEntityMapperClass}<${entity}DTO, ${entity}> {
 
 }
 </#if>
