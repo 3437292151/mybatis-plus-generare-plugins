@@ -28,6 +28,8 @@ public class MyTableInfo extends TableInfo {
 
     private List<TableField> dtoFields;
 
+    private List<TableField> commonDtoFields;
+
     public String getDtoName() {
         return dtoName;
     }

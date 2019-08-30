@@ -18,7 +18,7 @@ import org.mapstruct.Mapper;
 <#if kotlin>
 interface ${table.mapperName} : ${superMapperClass}<${entity}>
 <#else>
-public interface ${table.mapperName} extends ${cfg.superEntityMapperClass}<${entity}DTO, ${entity}> {
+public interface ${table.entityName}Mapper extends ${cfg.superEntityMapperClass}<${entity}DTO, ${entity}> {
 
 }
 </#if>

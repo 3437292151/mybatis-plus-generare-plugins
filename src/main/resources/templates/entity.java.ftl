@@ -1,7 +1,9 @@
 package ${package.Entity};
 
 <#list table.importPackages as pkg>
+    <#if (pkg!"defaultValue") != "java.io.Serializable">
 import ${pkg};
+    </#if>
 </#list>
 <#if swagger2>
 import io.swagger.annotations.ApiModel;
@@ -41,7 +43,7 @@ public class ${entity} extends ${superEntityClass}<#if activeRecord><${entity}><
 <#elseif activeRecord>
 public class ${entity} extends Model<${entity}> {
 <#else>
-public class ${entity} implements Serializable {
+public class ${entity} extends PrimaryKey {
 </#if>
 
 <#if entitySerialVersionUID>

@@ -1,12 +1,11 @@
 package com.yu.generator.config;
 
-import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.generator.InjectionConfig;
 import com.baomidou.mybatisplus.generator.config.*;
-import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.generator.config.rules.FileType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import com.yu.generator.MyInjectionConfig;
 import com.yu.generator.util.ObjectUtil;
-import freemarker.template.Configuration;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.logging.Log;
@@ -160,7 +159,7 @@ public class CodeGeneratorConfig {
 
     public static void setPackageConfig(){
         // 包配置
-        PackageConfig pc = new PackageConfig();
+        PackageConfig pc = new MyPackageConfig();
         Set<String> propertyNames = properties.stringPropertyNames();
         boolean entityFlag = true;
         boolean controllerFlag = true;
@@ -190,7 +189,7 @@ public class CodeGeneratorConfig {
             throw new RuntimeException("请设置项目包路径！！");
         }
         if (mapperFlag){
-            pc.setMapper("dao");
+            pc.setMapper("repository.dao");
         }
         if (controllerFlag){
             pc.setController("web.rest");
@@ -203,92 +202,46 @@ public class CodeGeneratorConfig {
     }
 
     public static void setInjectionConfig(){
-        String property = System.getProperty("user.dir");
         // 自定义配置
-        InjectionConfig cfg = new InjectionConfig() {
-            @Override
-            public void initMap() {
-                Map<String, Object> map = new HashMap<>();
-                    String superDtoClass = properties.getProperty("sc.superDtoClass");
-                    String superEntityMapperClass = properties.getProperty("sc.superEntityMapperClass");
-                    if (!org.apache.commons.lang.StringUtils.isBlank(superDtoClass)){
-                        map.put("superDtoClassPackage", superDtoClass.substring(0, superDtoClass.lastIndexOf(".")));
-                        map.put("superDtoClass", superDtoClass.substring(superDtoClass.lastIndexOf(".") + 1, superDtoClass.length()));
-                    }
-                    if (org.apache.commons.lang.StringUtils.isBlank(superEntityMapperClass)){
-                        superEntityMapperClass = getPackageConfig().getParent() + getPackageConfig().getService() +".mapper.EntityMapper";
-                    }
-                    map.put("superEntityMapperClassPackage", superEntityMapperClass.substring(0, superEntityMapperClass.lastIndexOf(".")));
-                    map.put("superEntityMapperClass", superEntityMapperClass.substring(superEntityMapperClass.lastIndexOf(".") + 1, superEntityMapperClass.length()));
-                this.setMap(map);
-            }
-        };
-
+        InjectionConfig cfg = new MyInjectionConfig();
 
         // 自定义输出配置
         List<FileOutConfig> focList = new ArrayList<>();
-        // 如果模板引擎是 freemarker
-        String templatePath = "/templates/mapper.xml.ftl";
-        // 自定义配置会被优先输出
-        focList.add(new FileOutConfig(templatePath) {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-                String out = property + "/src/main/resources/mapper/"
-                        + tableInfo.getEntityName() + "Dao" + StringPool.DOT_XML;
-                return out;
-            }
-        });
+
+        // 创建 entity super class
+        String templatePath = "/templates/entityprimary.java.ftl";
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.DOMAIN_PACKAGE , MyConstVal.BASE_ENTITY_CLASS));
+
+        // 创建 super mapper class
+        templatePath = "/templates/mybasemapper.java.ftl";
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.MAPPER_PACKAGE, MyConstVal.BASE_ENTITY_MAPPER_CLASS));
+
+        // 创建 super serivce interface
+        templatePath = "/templates/mybaseservice.java.ftl";
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.SERVICE_PACKAGE, MyConstVal.BASE_SERVICE_CLASS));
+
+        // 创建 super serivce implements class
+        templatePath = "/templates/mybaseserviceImpl.java.ftl";
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.SERVICE_IMPL_PACKAGE, MyConstVal.BASE_SERVICE_IMPL_CLASS));
+
+        // 创建 sql mapper.xml
+        templatePath = "/templates/mapper.xml.ftl";
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.PARENT_RESOURCES_PATH,null, MyConstVal.XML_MAPPER, MyConstVal.MAPPER,  FileType.XML) );
+
+
+        // 创建 dao class
         templatePath = "/templates/myDao.java.ftl";
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.DAO_PACKAGE, MyConstVal.MAPPER, FileType.MAPPER));
 
-        // 自定义配置会被优先输出
-        focList.add(new FileOutConfig(templatePath) {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-               String out = property + "/src/main/java/" +
-                        getPackageConfig().getParent().replace(".","/")
-                        + "/" +
-                        getPackageConfig().getMapper().replace(".","/")
-                        + "/"
-                        + tableInfo.getEntityName() + "Dao" + StringPool.DOT_JAVA;
-                return out;
-            }
-        });
 
+        // 创建 dto class
         templatePath = "/templates/entityDTO.java.ftl";
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.DTO_PACKAGE, MyConstVal.DTO_SUFFIX, FileType.ENTITY));
 
-        // 自定义配置会被优先输出
-        focList.add(new FileOutConfig(templatePath) {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-                String out = property + "/src/main/java/" +
-                        getPackageConfig().getParent().replace(".","/")
-                        + "/"
-                        + getPackageConfig().getService().replace(".","/")
-                        + "/dto/"
-                        + tableInfo.getEntityName() + "DTO" + StringPool.DOT_JAVA;
-                return out;
-            }
-        });
 
+        // 创建 entity Mapper class
         templatePath = "/templates/mymapper.java.ftl";
-
-        // 自定义配置会被优先输出
-        focList.add(new FileOutConfig(templatePath) {
-            @Override
-            public String outputFile(TableInfo tableInfo) {
-                // 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-                String out = property + "/src/main/java/" +
-                        getPackageConfig().getParent().replace(".","/")
-                        + "/" +
-                        getPackageConfig().getService().replace(".","/")
-                        + "/mapper/"
-                        + tableInfo.getEntityName() + "Mapper" + StringPool.DOT_JAVA;
-                return out;
-            }
-        });
+        focList.add(new MyFileOutConfig(templatePath, MyConstVal.MAPPER_PACKAGE, MyConstVal.ENTITY_MAPPER_SUFFIX, FileType.ENTITY) );
 
 
         cfg.setFileOutConfigList(focList);
@@ -297,33 +250,37 @@ public class CodeGeneratorConfig {
 
    public static void setTemplateConfig(){
         // 配置模板
-        TemplateConfig tc = new TemplateConfig();
+        TemplateConfig tc = new MyTemplateConfig();
         String service = properties.getProperty("tc.service");
         if (!StringUtils.isBlank(service)){
            tc.setService(service);
         }else {
-            tc.setService("/templates/myservice.java");
+            tc.setService("/templates/service.java");
         }
        String serviceImpl = properties.getProperty("tc.serviceImpl");
         if (!StringUtils.isBlank(serviceImpl)){
             tc.setServiceImpl(serviceImpl);
         }else {
-            tc.setServiceImpl("/templates/myserviceImpl.java");
+            tc.setServiceImpl("/templates/serviceImpl.java");
         }
         String dao = properties.getProperty("tc.dao");
         if (!StringUtils.isBlank(dao)){
             tc.setMapper(dao);
+        }else {
+            tc.setMapper(null);
         }
         String xml = properties.getProperty("tc.xml");
        if (!StringUtils.isBlank(xml)){
            tc.setXml(xml);
+       }else {
+           tc.setXml(null);
        }
         templateConfig = tc;
    }
 
    public static void setStrategyConfig(){
        // 策略配置
-       StrategyConfig strategy = new StrategyConfig();
+       StrategyConfig strategy = new MyStrategyConfig();
        Set<String> propertyNames = properties.stringPropertyNames();
        for (String propertyName : propertyNames){
            if( propertyName.startsWith("sc")){

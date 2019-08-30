@@ -1,12 +1,12 @@
-package ${package.Controller};
+package com.yu.mybatisplus.web.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-
 import ${package.Service}.dto.${entity}DTO;
 import ${package.Service}.${table.serviceName};
 
-import com.yu.web.rest.util.HeaderUtil;
-import com.yu.web.rest.util.MybatisPaginationUtil;
+import ${package.Controller}.util.HeaderUtil;
+import ${package.Controller}.util.MybatisPaginationUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,100 +20,105 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+
 <#if superControllerClassPackage??>
 import ${superControllerClassPackage};
 </#if>
 
 /**
- * <p>
- * ${table.comment!} 前端控制器
- * </p>
- *
- * @author ${author}
- * @since ${date}
- */
+* <p>
+    * ${table.comment!} 前端控制器
+    * </p>
+*
+* @author ${author}
+* @since ${date}
+*/
 <#if restControllerStyle>
 @RestController
 <#else>
 @Controller
 </#if>
-@RequestMapping("<#if package.ModuleName??>/${package.ModuleName}</#if>/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
+@RequestMapping("/api<#if package.ModuleName??>/${package.ModuleName}</#if>")
 <#if kotlin>
 class ${table.controllerName}<#if superControllerClass??> : ${superControllerClass}()</#if>
 <#else>
 <#if superControllerClass??>
 public class ${table.controllerName} extends ${superControllerClass} {
 <#else>
+@Slf4j
 public class ${table.controllerName} {
 </#if>
-    private static final String ENTITY_NAME = "mcrTDictItem";
+    private static final String ENTITY_NAME = "${entity}";
 
     @Autowired
     private ${table.serviceName} targetService;
 
     /**
-    * 获取数据列表
-    */
-    @GetMapping("/list")
-    public ResponseEntity<List<${entity}DTO>> findListByPage(@PageableDefault(page = 0, size = 20, sort = {"updDt"}, direction = Sort.Direction.DESC) Pageable pageable){
+     * 添加${table.comment!}数据
+     */
+    @PostMapping(value = "/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
+    public ResponseEntity<${entity}DTO> create${entity}(@RequestBody ${entity}DTO ${entity}DTO)throws URISyntaxException {
+        log.info("create${entity}() REST request to create ${entity} : {}", ${entity}DTO);
+        ${entity}DTO result = targetService.save(${entity}DTO);
+        return ResponseEntity.created(new URI("/api//<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
 
-        IPage<${entity}DTO> result = targetService.page(pageable);
-        HttpHeaders headers = MybatisPaginationUtil.generatePaginationHttpHeaders(result,"/api/mcrTCcApplys/cols/auth");
+    /**
+     * 更新${table.comment!}数据
+     */
+    @PutMapping(value = "/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
+    public ResponseEntity<${entity}DTO> updateMcrTDictItem(@RequestBody ${entity}DTO ${entity}DTO)throws URISyntaxException {
+        log.info("update${entity}() REST request to create ${entity} : {}", ${entity}DTO);
+        ${entity}DTO result = targetService.saveOrUpdate(${entity}DTO);
+        return ResponseEntity.created(new URI("/api//<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId()))
+            .body(result);
+    }
+
+    /**
+    * 获取${table.comment!}数据列表
+    */
+    @GetMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>s")
+    public ResponseEntity<List<${entity}DTO>> get${entity}ByCriteria(${entity}DTO ${entity}DTO, @PageableDefault(page = 0, size = 20, sort = {"updDt"}, direction = Sort.Direction.DESC) Pageable pageable){
+        log.info("get${entity}ByCriteria() Rest request to GET a page of ${entity}s param ：{}; pageable: {}", ${entity}DTO, pageable);
+
+        IPage<${entity}DTO> result = targetService.page(pageable, ${entity}DTO);
+        HttpHeaders headers = MybatisPaginationUtil.generatePaginationHttpHeaders(result,"/api/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>s");
         return new ResponseEntity<>(result.getRecords(), headers, HttpStatus.OK);
     }
 
 
     /**
-    * 获取全部数据
+    * 根据ID查找${table.comment!}数据
     */
-    @GetMapping("/all")
-    public ResponseEntity<List<${entity}DTO>> findAll(){
-        List<${entity}DTO> result = targetService.list();
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-
-    /**
-    * 根据ID查找数据
-    */
-    @GetMapping("/find")
-    public ResponseEntity<${entity}DTO> find(@RequestParam("id") String id){
+    @GetMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/<#if true>$</#if>{id}")
+    public ResponseEntity<${entity}DTO> get${entity}ById(@PathVariable String id){
+        log.info("get${entity}ById() Rest request to GET ${entity} by id ：{};", id);
         ${entity}DTO result = targetService.getById(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 
     /**
-    * 添加数据
+    * 删除${table.comment!}数据通过id数组
     */
-    @PostMapping(value = "/add")
-    public ResponseEntity<${entity}DTO> addItem(@RequestBody ${entity}DTO ${entity}DTO)throws URISyntaxException {
-        ${entity}DTO result = targetService.save(${entity}DTO);
-        return ResponseEntity.created(new URI("/api/mstDesignSelects/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
-    }
-
-
-    /**
-    * 更新数据
-    */
-    @PutMapping(value = "/update")
-    public ResponseEntity<${entity}DTO> updateItem(@RequestBody ${entity}DTO ${entity}DTO)throws URISyntaxException {
-        ${entity}DTO result = targetService.saveOrUpdate(${entity}DTO);
-        return ResponseEntity.created(new URI("/api/mstDesignSelects/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
-    }
-
-
-    /**
-    * 删除数据
-    */
-    @DeleteMapping("/del")
-    public ResponseEntity<Void> deleteItems(@RequestParam("ids") List<Long> ids){
+    @DeleteMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>s/ids")
+    public ResponseEntity<Void> delete${entity}ByIds(@RequestBody List<String> ids){
+        log.debug("delete${entity}ByIds() REST request to delete ${entity}s : {}", ids);
         boolean isOk = targetService.removeByIds(ids);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, ids.toString())).build();
+    }
+
+    /**
+     * 删除${table.comment!}数据通过id
+     */
+    @DeleteMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/<#if true>$</#if>{id}")
+    public ResponseEntity<Void> delete${entity}ById(@PathVariable String id){
+        log.debug("delete${entity}ById() REST request to delete ${entity} : {}", id);
+        boolean isOk = targetService.removeById(id);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id)).build();
     }
 }
 </#if>

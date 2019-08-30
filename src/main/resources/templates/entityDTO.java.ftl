@@ -1,7 +1,9 @@
 package ${package.Service}.dto;
 
 <#list table.importPackages as pkg>
+<#if (pkg!"defaultValue") != "java.io.Serializable">
 import ${pkg};
+</#if>
 </#list>
 <#if cfg.superDtoClass??>
 import ${cfg.superDtoClassPackage}.${cfg.superDtoClass};

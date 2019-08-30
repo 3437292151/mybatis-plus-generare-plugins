@@ -13,9 +13,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class MyStrategyConfig extends StrategyConfig{
 
-    private String superDtoMapperClass ;
+    private String superDtoClass;//super dto class
 
-    private String superDtoClass;
+    private String superEntityMapper;//super entity mapper class
 
     private String[] superDtoColumns;//自定义基础的DTO类，公共字段
 }

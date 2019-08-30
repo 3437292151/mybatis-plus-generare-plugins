@@ -21,7 +21,7 @@ open class ${table.serviceImplName} : ${superServiceImplClass}<${entity}Dao, ${c
 
 }
 <#else>
-public class ${table.serviceImplName} extends ${superServiceImplClass}<${entity}Dao, ${entity}Mapper, ${entity}DTO, ${entity}> implements ${table.serviceName} {
+public class ${table.serviceImplName} extends BaseServiceImpl<${entity}Dao, ${entity}Mapper, ${entity}DTO, ${entity}> implements ${table.serviceName} {
 
 }
 </#if>
