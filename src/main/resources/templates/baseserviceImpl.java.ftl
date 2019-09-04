@@ -9,9 +9,9 @@ import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import ${package.parent}.domain.PrimaryKey;
-import ${package.Service}.BaseService;
-import ${package.Service}.mapper.EntityMapper;
+import ${package.BaseEntity}.${BaseEntity};
+import ${package.BaseService}.${BaseService};
+import ${package.EntityMapper}.${BaseEntityMapper};
 import ${package.Controller}.util.PageUtil;
 import org.apache.ibatis.binding.MapperMethod.ParamMap;
 import org.apache.ibatis.logging.Log;
@@ -163,8 +163,8 @@ public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMap
         return SqlHelper.retBool(Integer.valueOf(this.baseMapper.deleteByMap(columnMap)));
     }
 
-    public boolean remove(Wrapper<D> wrapper) {
-        E entity = this.entityMapper.toEntity(wrapper.getEntity());
+    public boolean remove(D dto) {
+        E entity = this.entityMapper.toEntity(dto);
         Wrapper<E> eWrapper = Wrappers.update(entity);
         return SqlHelper.retBool(Integer.valueOf(this.baseMapper.delete(eWrapper)));
     }
@@ -221,30 +221,30 @@ public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMap
         return this.entityMapper.toDto(this.baseMapper.selectByMap(columnMap));
     }
 
-    public D getOne(Wrapper<D> queryWrapper, boolean throwEx) {
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+    public D getOne(D dto, boolean throwEx) {
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         return throwEx?this.entityMapper.toDto(this.baseMapper.selectOne(wrapper)):SqlHelper.getObject(this.log, this.entityMapper.toDto(this.baseMapper.selectList(wrapper)));
     }
 
-    public Map<String, Object> getMap(Wrapper<D> queryWrapper) {
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+    public Map<String, Object> getMap(D dto) {
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         return (Map)SqlHelper.getObject(this.log, this.baseMapper.selectMaps(wrapper));
     }
 
 
 
-    public int count(Wrapper<D> queryWrapper) {
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+    public int count(D dto) {
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         return SqlHelper.retCount(this.baseMapper.selectCount(wrapper));
     }
 
-    public List<D> list(Wrapper<D> queryWrapper) {
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+    public List<D> list(D dto) {
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         return this.entityMapper.toDto(this.baseMapper.selectList(wrapper));
     }
 
-    public IPage<D> page(Pageable pageable, Wrapper<D> queryWrapper) {
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+    public IPage<D> page(Pageable pageable, D dto) {
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         Page<E> eiPage = PageUtil.pageableToPage(pageable);
         IPage<E> eiPage1 = this.baseMapper.selectPage(eiPage, wrapper);
         Page<D> page = new Page(pageable.getPageNumber(), pageable.getPageSize());
@@ -255,19 +255,19 @@ public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMap
         return page;
     }
 
-    public List<Map<String, Object>> listMaps(Wrapper<D> queryWrapper) {
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+    public List<Map<String, Object>> listMaps(D dto) {
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         return this.baseMapper.selectMaps(wrapper);
     }
 
-    public <V> List<V> listObjs(Wrapper<D> queryWrapper, Function<? super Object, V> mapper) {
+    public <V> List<V> listObjs(D dto, Function<? super Object, V> mapper) {
 
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         return this.baseMapper.selectObjs(wrapper).stream().filter(Objects::nonNull).map(mapper).collect(Collectors.toList());
     }
 
-    public IPage<Map<String, Object>> pageMaps(IPage<D> page, Wrapper<D> queryWrapper) {
-        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(queryWrapper.getEntity()));
+    public IPage<Map<String, Object>> pageMaps(IPage<D> page, D dto) {
+        Wrapper<E> wrapper = Wrappers.query(this.entityMapper.toEntity(dto));
         Page<E> eiPage = new Page<E>();
         eiPage.setCurrent(page.getCurrent());
         eiPage.setSize(page.getPages());
@@ -275,8 +275,8 @@ public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMap
         return this.baseMapper.selectMapsPage(eiPage, wrapper);
     }
 
-    public <V> V getObj(Wrapper<D> queryWrapper, Function<? super Object, V> mapper) {
-        return SqlHelper.getObject(this.log, this.listObjs(queryWrapper, mapper));
+    public <V> V getObj(D dto, Function<? super Object, V> mapper) {
+        return SqlHelper.getObject(this.log, this.listObjs(dto, mapper));
     }
 
 }

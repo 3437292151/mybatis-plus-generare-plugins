@@ -1,7 +1,7 @@
 package ${package.Service};
 
 import ${package.Entity}.${entity};
-import ${package.Service}.dto.${entity}DTO;
+import ${package.DTO}.${entityDTO};
 import ${superServiceClassPackage};
 
 /**
@@ -15,7 +15,7 @@ import ${superServiceClassPackage};
 <#if kotlin>
 interface ${table.serviceName} : ${superServiceClass}<${entity}>
 <#else>
-public interface ${table.serviceName} extends BaseService<${entity}DTO, ${entity}> {
+public interface ${table.serviceName} extends ${BaseService}<${entityDTO}, ${entity}> {
 
 }
 </#if>

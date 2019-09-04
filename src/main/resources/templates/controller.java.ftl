@@ -1,7 +1,7 @@
 package com.yu.mybatisplus.web.rest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import ${package.Service}.dto.${entity}DTO;
+import ${package.DTO}.${entityDTO};
 import ${package.Service}.${table.serviceName};
 
 import ${package.Controller}.util.HeaderUtil;
@@ -57,9 +57,9 @@ public class ${table.controllerName} {
      * 添加${table.comment!}数据
      */
     @PostMapping(value = "/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
-    public ResponseEntity<${entity}DTO> create${entity}(@RequestBody ${entity}DTO ${entity}DTO)throws URISyntaxException {
-        log.info("create${entity}() REST request to create ${entity} : {}", ${entity}DTO);
-        ${entity}DTO result = targetService.save(${entity}DTO);
+    public ResponseEntity<${entityDTO}> create${entity}(@RequestBody ${entity}DTO ${entityDTO?uncap_first})throws URISyntaxException {
+        log.info("create${entity}() REST request to create ${entity} : {}", ${entityDTO?uncap_first});
+        ${entityDTO} result = targetService.save(${entityDTO?uncap_first});
         return ResponseEntity.created(new URI("/api//<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -69,9 +69,9 @@ public class ${table.controllerName} {
      * 更新${table.comment!}数据
      */
     @PutMapping(value = "/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
-    public ResponseEntity<${entity}DTO> updateMcrTDictItem(@RequestBody ${entity}DTO ${entity}DTO)throws URISyntaxException {
-        log.info("update${entity}() REST request to create ${entity} : {}", ${entity}DTO);
-        ${entity}DTO result = targetService.saveOrUpdate(${entity}DTO);
+    public ResponseEntity<${entityDTO}> update${entity}(@RequestBody ${entityDTO} ${entityDTO?uncap_first})throws URISyntaxException {
+        log.info("update${entity}() REST request to create ${entity} : {}", ${entityDTO?uncap_first});
+        ${entity}DTO result = targetService.saveOrUpdate(${entityDTO?uncap_first});
         return ResponseEntity.created(new URI("/api//<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId()))
             .body(result);
@@ -81,10 +81,10 @@ public class ${table.controllerName} {
     * 获取${table.comment!}数据列表
     */
     @GetMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>s")
-    public ResponseEntity<List<${entity}DTO>> get${entity}ByCriteria(${entity}DTO ${entity}DTO, @PageableDefault(page = 0, size = 20, sort = {"updDt"}, direction = Sort.Direction.DESC) Pageable pageable){
-        log.info("get${entity}ByCriteria() Rest request to GET a page of ${entity}s param ：{}; pageable: {}", ${entity}DTO, pageable);
+    public ResponseEntity<List<${entityDTO}>> get${entity}ByCriteria(${entityDTO} ${entityDTO?uncap_first}, @PageableDefault(page = 0, size = 20, sort = {"updDt"}, direction = Sort.Direction.DESC) Pageable pageable){
+        log.info("get${entity}ByCriteria() Rest request to GET a page of ${entity}s param ：{}; pageable: {}", ${entityDTO?uncap_first}, pageable);
 
-        IPage<${entity}DTO> result = targetService.page(pageable, ${entity}DTO);
+        IPage<${entityDTO}> result = targetService.page(pageable, ${entityDTO?uncap_first});
         HttpHeaders headers = MybatisPaginationUtil.generatePaginationHttpHeaders(result,"/api/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>s");
         return new ResponseEntity<>(result.getRecords(), headers, HttpStatus.OK);
     }
@@ -94,9 +94,9 @@ public class ${table.controllerName} {
     * 根据ID查找${table.comment!}数据
     */
     @GetMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/<#if true>$</#if>{id}")
-    public ResponseEntity<${entity}DTO> get${entity}ById(@PathVariable String id){
+    public ResponseEntity<${entityDTO}> get${entity}ById(@PathVariable String id){
         log.info("get${entity}ById() Rest request to GET ${entity} by id ：{};", id);
-        ${entity}DTO result = targetService.getById(id);
+        ${entityDTO} result = targetService.getById(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

@@ -127,7 +127,6 @@ public class CodeGeneratorConfig {
         if (baseColumnList){
             gc.setBaseColumnList(baseColumnList);
         }
-        log.info(gc.toString());
         globalConfig = gc;
     }
 
@@ -150,20 +149,13 @@ public class CodeGeneratorConfig {
             }
         }
         dsc.setDriverName("com.mysql.jdbc.Driver");
-        /*dsc.setUrl("jdbc:mysql://192.168.100.229:3306/cpecmcr?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true");
-        dsc.setUsername("root");
-        dsc.setPassword("1qaz@WSX");*/
-        log.info(dsc.toString());
         dataSourceConfig = dsc;
     }
 
     public static void setPackageConfig(){
         // 包配置
-        PackageConfig pc = new MyPackageConfig();
+        MyPackageConfig pc = new MyPackageConfig();
         Set<String> propertyNames = properties.stringPropertyNames();
-        boolean entityFlag = true;
-        boolean controllerFlag = true;
-        boolean mapperFlag = true;
         boolean parentFlag = true;
         for (String propertyName : propertyNames){
             if (propertyName.startsWith("package.")){
@@ -172,15 +164,6 @@ public class CodeGeneratorConfig {
                 if (StringUtils.equals("parent", propertyName) && !StringUtils.isBlank(property)){
                     parentFlag = false;
                 }
-                if (StringUtils.equals(propertyName, "entity") && StringUtils.isBlank(property)){
-                    entityFlag = false;
-                }
-                if (StringUtils.equals(propertyName, "controller") && StringUtils.isBlank(property)){
-                    controllerFlag = false;
-                }
-                if (StringUtils.equals(propertyName, "mapper") && StringUtils.isBlank(property)){
-                    mapperFlag = false;
-                }
                 ObjectUtil.setEntity(pc, propertyName, property);
             }
         }
@@ -188,16 +171,6 @@ public class CodeGeneratorConfig {
             log.debug("请设置项目包路径！！");
             throw new RuntimeException("请设置项目包路径！！");
         }
-        if (mapperFlag){
-            pc.setMapper("repository.dao");
-        }
-        if (controllerFlag){
-            pc.setController("web.rest");
-        }
-        if (entityFlag){
-            pc.setEntity("domain");
-        }
-        log.info(pc.toString());
         packageConfig = pc;
     }
 
@@ -244,37 +217,20 @@ public class CodeGeneratorConfig {
         focList.add(new MyFileOutConfig(templatePath, MyConstVal.MAPPER_PACKAGE, MyConstVal.ENTITY_MAPPER_SUFFIX, FileType.ENTITY) );
 
 
-        cfg.setFileOutConfigList(focList);
+        //cfg.setFileOutConfigList(focList);
         injectionConfig = cfg;
     }
 
    public static void setTemplateConfig(){
         // 配置模板
-        TemplateConfig tc = new MyTemplateConfig();
-        String service = properties.getProperty("tc.service");
-        if (!StringUtils.isBlank(service)){
-           tc.setService(service);
-        }else {
-            tc.setService("/templates/service.java");
-        }
-       String serviceImpl = properties.getProperty("tc.serviceImpl");
-        if (!StringUtils.isBlank(serviceImpl)){
-            tc.setServiceImpl(serviceImpl);
-        }else {
-            tc.setServiceImpl("/templates/serviceImpl.java");
-        }
-        String dao = properties.getProperty("tc.dao");
-        if (!StringUtils.isBlank(dao)){
-            tc.setMapper(dao);
-        }else {
-            tc.setMapper(null);
-        }
-        String xml = properties.getProperty("tc.xml");
-       if (!StringUtils.isBlank(xml)){
-           tc.setXml(xml);
-       }else {
-           tc.setXml(null);
-       }
+       MyTemplateConfig tc = new MyTemplateConfig();
+       properties.stringPropertyNames().stream()
+               .filter(e -> e.startsWith("tc."))
+               .forEach(e -> {
+                   String property = properties.getProperty(e);
+                   String propertyName = e.replace("tc.", "");
+                   ObjectUtil.setEntity(tc, propertyName, property);
+               });
         templateConfig = tc;
    }
 
@@ -318,16 +274,8 @@ public class CodeGeneratorConfig {
                        //使用找到的构造方法创建实例
                        Object instance = constructor.newInstance();
                        ObjectUtil.setEntity(strategy, propertyName, instance);
-                   } catch (ClassNotFoundException e) {
-                       e.printStackTrace();
-                   }catch (NoSuchMethodException e) {
-                       e.printStackTrace();
-                   }catch (InstantiationException e) {
-                       e.printStackTrace();
-                   } catch (IllegalAccessException e) {
-                       e.printStackTrace();
-                   } catch (InvocationTargetException e) {
-                       e.printStackTrace();
+                   } catch (Exception e) {
+                       log.info(e);
                    }
                }
                propertyName = propertyName.replace("sc.", "");
@@ -390,12 +338,12 @@ public class CodeGeneratorConfig {
            setStrategyConfig();
            setInjectionConfig();
        } catch (IOException e) {
-           e.printStackTrace();
+           log.info(e);
        }finally {
            try {
                resourceAsStream.close();
            } catch (IOException e) {
-               e.printStackTrace();
+               log.info(e);
            }
        }
    }

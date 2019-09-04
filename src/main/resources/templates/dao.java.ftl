@@ -1,4 +1,4 @@
-package ${package.Mapper};
+package ${package.Dao};
 
 import ${package.Entity}.${entity};
 import ${superMapperClassPackage};
@@ -15,9 +15,9 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 <#if kotlin>
-interface ${entity}Dao : ${superMapperClass}<${entity}>
+interface ${table.mapperName} : ${superMapperClass}<${entity}>
 <#else>
-public interface ${entity}Dao extends ${superMapperClass}<${entity}> {
+public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
 
 }
 </#if>

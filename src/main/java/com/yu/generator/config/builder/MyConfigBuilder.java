@@ -55,13 +55,16 @@ public class MyConfigBuilder extends ConfigBuilder {
         return superDtoClass;
     }
 
+    public String getSuperDtoEntityMapper() {
+        return superDtoEntityMapper;
+    }
+
     /**
      * 处理数据库表 加载数据库表、列、注释相关数据集
      *
      * @param config StrategyConfig
      */
     private void handlerStrategy(PackageConfig packageConfig, StrategyConfig config, GlobalConfig globalConfig) {
-        log.info("config: "+ config);
 
         MyStrategyConfig myStrategyConfig = (MyStrategyConfig) config;
 
@@ -80,10 +83,24 @@ public class MyConfigBuilder extends ConfigBuilder {
      * @return void
      **/
     private void getDtoTablesInfo(MyStrategyConfig myStrategyConfig) {
-        this.dtoTableInfoList = this.getTableInfoList();
-        List<String> superDtoColumns = Arrays.asList(myStrategyConfig.getSuperDtoColumns());
+        List<String> superDtoColumns = Arrays.asList(Optional.ofNullable(myStrategyConfig.getSuperDtoColumns()).orElse(new String[]{}));
+        if (this.dtoTableInfoList == null){
+            this.dtoTableInfoList = new ArrayList<>();
+        }
         //初始化dtoTableInfo数组
-        dtoTableInfoList.forEach(e -> {
+        this.getTableInfoList().forEach(e -> {
+            TableInfo tableInfo = new TableInfo();
+            tableInfo.setName(e.getName());
+            tableInfo.setXmlName(e.getXmlName());
+            tableInfo.setEntityName(e.getEntityName() + MyConstVal.DTO);
+            tableInfo.setMapperName(e.getEntityName() + MyConstVal.MAPPER);
+            tableInfo.setServiceName(e.getServiceName());
+            tableInfo.setServiceImplName(e.getServiceImplName());
+            tableInfo.setComment(e.getComment());
+            tableInfo.setControllerName(e.getControllerName());
+            tableInfo.setConvert(e.isConvert());
+            tableInfo.setFieldNames(e.getFieldNames());
+
             List<TableField> fields = new ArrayList<>();
             List<TableField> commonFields = new ArrayList<>();
             e.getFields().forEach(f -> {
@@ -100,8 +117,12 @@ public class MyConfigBuilder extends ConfigBuilder {
                     fields.add(f);
                 }
             });
-            e.setFields(fields);
-            e.setCommonFields(commonFields);
+            tableInfo.setFields(fields);
+            tableInfo.setCommonFields(commonFields);
+            if (!org.apache.commons.lang.StringUtils.isBlank(superDtoClass)){
+                tableInfo.getImportPackages().add(superDtoClass);
+            }
+            this.dtoTableInfoList.add(tableInfo);
         });
     }
 
@@ -181,7 +202,6 @@ public class MyConfigBuilder extends ConfigBuilder {
         setPathInfo(pathInfo, template.getMapper(), outputDir, MyConstVal.MAPPER_PATH, MyConstVal.MAPPER);
         setPathInfo(pathInfo, template.getDto(), outputDir, MyConstVal.DTO_PATH, MyConstVal.DTO);
         setPathInfo(pathInfo, template.getController(), outputDir, MyConstVal.CONTROLLER_PATH, MyConstVal.CONTROLLER);
-
         this.getPackageInfo().put("parent", packageConfig.getParent());
     }
 
@@ -202,9 +222,9 @@ public class MyConfigBuilder extends ConfigBuilder {
     private void setPathInfo(Map<String, String> pathInfo, String template, String outputDir, String path, String module) {
         if (StringUtils.isNotEmpty(template)) {
             if (org.apache.commons.lang.StringUtils.equals(module, MyConstVal.XML)){
-                pathInfo.put(path, joinPath(outputDir.replace("java", "resources"), module));
+                pathInfo.put(path, joinPath(outputDir.replaceAll("java", "resources"), module));
             }else {
-                pathInfo.put(path, joinPath(outputDir, this.getPathInfo().get(module)));
+                pathInfo.put(path, joinPath(outputDir, this.getPackageInfo().get(module)));
             }
         }
     }
@@ -224,6 +244,8 @@ public class MyConfigBuilder extends ConfigBuilder {
             parentDir += File.separator;
         }
         packageName = packageName.replaceAll("\\.", StringPool.BACK_SLASH + File.separator);
+        /*log.info("项目目录: ["+ parentDir + "]" );
+        log.info("包名称: [" + packageName + "]");*/
         return parentDir + packageName;
     }
 }

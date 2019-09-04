@@ -1,4 +1,4 @@
-package ${package.Service}.mapper;
+package ${package.EntityMapper};
 
 import java.util.List;
 

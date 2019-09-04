@@ -32,7 +32,7 @@ public interface MyConstVal extends ConstVal {
 
     String TEMPLATE_BASE_SERIVCE = "/templates/baseservice.java";
 
-    String TEMPLATE_BASE_SERIVCE_IMPL = "/templates/baseserviceimpl.java";
+    String TEMPLATE_BASE_SERIVCE_IMPL = "/templates/baseserviceImpl.java";
 
     String MAVEN_JAVA_PATH = "src" + File.separator + "main" + File.separator + "java";
 
@@ -42,11 +42,11 @@ public interface MyConstVal extends ConstVal {
 
     String PARENT_RESOURCES_PATH = System.getProperty("user.dir") + File.separator + MyConstVal.MAVEN_RESOURCES_PATH;
 
-    String BASE_ENTITY_CLASS = "PrimaryKey.java";
+    String BASE_ENTITY_CLASS = "PrimaryKey";
 
     String BASE_ENTITY_PATH = "base_entity_path";
 
-    String BASE_ENTITY = "PrimaryKey";
+    String BASE_ENTITY = "BaseEntity";
 
     String DOMAIN_PACKAGE = "domain";
 
@@ -54,23 +54,25 @@ public interface MyConstVal extends ConstVal {
 
     String SERVICE_PACKAGE = "service";
 
-    String BASE_SERVICE_CLASS = "BaseService.java";
+    String BASE_SERVICE_CLASS = "BaseService";
 
     String SERVICE_IMPL_PACKAGE = "service.impl";
 
-    String BASE_SERVICE_IMPL_CLASS = "BaseServiceImpl.java";
+    String BASE_SERVICE_IMPL_CLASS = "BaseServiceImpl";
 
-    String DAO_PACKAGE = "repository.dao";
+    String DAO_PACKAGE = "repository";
 
     String DAO_PATH = "dao_path";
 
-    String BASE_ENTITY_MAPPER_CLASS = "EntityMapper.java";
+    String BASE_ENTITY_MAPPER_CLASS = "EntityMapper";
 
-    String BASE_ENTITY_MAPPER_PATH = "entity_maper_path";
+    String BASE_ENTITY_MAPPER_PATH = "entity_mapper_path";
 
     String BASE_ENTITY_MAPPER = "EntityMapper";
 
     String XML_MAPPER = "mapper";
+
+    String XML_PACKAGE = "mapper";
 
     String DTO_PACKAGE = "service.dto";
 
@@ -80,11 +82,13 @@ public interface MyConstVal extends ConstVal {
 
     String ENTITY_MAPPER_SUFFIX = "Mapper";
 
-    String BASE_SERVICE_PATH = "base_serivce_path";
+    String BASE_SERVICE_PATH = "base_service_path";
 
-    String BASE_SERVICE = "BaseSerivce";
+    String BASE_SERVICE = "BaseService";
 
-    String BASE_SERVICE_IMPL_PATH = "base_serivce_impl_path";
+    String BASE_SERVICE_IMPL_PATH = "base_service_impl_path";
 
-    String BASE_SERVICE_IMPL = "BaseSerivceImpl";
+    String BASE_SERVICE_IMPL = "BaseServiceImpl";
+
+    String CONTROLLER_PACKAGE = "web.rest";
 }

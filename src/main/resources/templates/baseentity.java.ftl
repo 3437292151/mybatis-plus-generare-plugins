@@ -1,4 +1,4 @@
-package ${package.Entity};
+package ${package.BaseEntity};
 
 import lombok.Data;
 

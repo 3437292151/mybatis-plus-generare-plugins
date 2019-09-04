@@ -44,8 +44,8 @@ public class MyAutoGenerator extends AutoGenerator {
         log.info("==========================准备生成文件...==========================");
 
         if(null == this.config) {
+
             this.config = new MyConfigBuilder(this.getPackageInfo(), this.getDataSource(), this.getStrategy(), this.getTemplate(), this.getGlobalConfig());
-            log.info("==========================初始化config完成==========================");
             if(null != this.injectionConfig) {
                 this.injectionConfig.setConfig(this.config);
             }
@@ -55,7 +55,7 @@ public class MyAutoGenerator extends AutoGenerator {
         }
 
         ConfigBuilder configBuilder = this.pretreatmentConfigBuilder(this.config);
-        configBuilder.getPackageInfo().remove(ConstVal.XML);
+        //configBuilder.getPackageInfo().remove(ConstVal.XML);
         this.getTemplateEngine().init(configBuilder).mkdirs().batchOutput().open();
 
         log.info("==========================文件生成完成！！！==========================");

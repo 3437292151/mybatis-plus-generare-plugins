@@ -10,8 +10,8 @@ import com.baomidou.mybatisplus.extension.service.additional.query.impl.QueryCha
 import com.baomidou.mybatisplus.extension.service.additional.update.impl.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.additional.update.impl.UpdateChainWrapper;
 
-import ${package.parent}.domain.PrimaryKey;
-import ${package.Service}.mapper.EntityMapper;
+import ${package.BaseEntity}.${BaseEntity};
+import ${package.EntityMapper}.${BaseEntityMapper};
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,14 +50,14 @@ public interface BaseService<D, E extends PrimaryKey> {
 
     boolean removeByMap(Map<String, Object> var1);
 
-    boolean remove(Wrapper<D> var1);
+    boolean remove(D dto);
 
     boolean removeByIds(List<? extends Serializable> var1);
 
 
     D updateById(D var1);
 
-    boolean update(D var1, Wrapper<D> var2);
+    boolean update(D var1, Wrapper<D> updateWrapper);
 
     default boolean update(Wrapper<D> updateWrapper) {
         return this.update((D) null, updateWrapper);
@@ -80,38 +80,38 @@ public interface BaseService<D, E extends PrimaryKey> {
 
     List<D> listByMap(Map<String, Object> var1);
 
-    default D getOne(Wrapper<D> queryWrapper) {
-        return this.getOne(queryWrapper, true);
+    default D getOne(D dto) {
+        return this.getOne(dto, true);
     }
 
-    D getOne(Wrapper<D> var1, boolean var2);
+    D getOne(D dto, boolean var2);
 
-    Map<String, Object> getMap(Wrapper<D> var1);
+    Map<String, Object> getMap(D dto);
 
-    <V> V getObj(Wrapper<D> var1, Function<? super Object, V> var2);
+    <V> V getObj(D dto, Function<? super Object, V> var2);
 
-    int count(Wrapper<D> var1);
+    int count(D dto);
 
     default int count() {
-        return this.count(Wrappers.emptyWrapper());
+        return this.count(null);
     }
 
-    List<D> list(Wrapper<D> var1);
+    List<D> list(D dto);
 
     default List<D> list() {
-        return this.list(Wrappers.emptyWrapper());
+        return this.list(null);
     }
 
-    IPage<D> page(Pageable pageable, Wrapper<D> var2);
+    IPage<D> page(Pageable pageable, D dto);
 
     default IPage<D> page(Pageable pageable) {
-        return this.page(pageable, Wrappers.emptyWrapper());
+        return this.page(pageable, null);
     }
 
-    List<Map<String, Object>> listMaps(Wrapper<D> var1);
+    List<Map<String, Object>> listMaps(D dto);
 
     default List<Map<String, Object>> listMaps() {
-        return this.listMaps(Wrappers.emptyWrapper());
+        return this.listMaps(null);
     }
 
     default List<Object> listObjs() {
@@ -119,19 +119,19 @@ public interface BaseService<D, E extends PrimaryKey> {
     }
 
     default <V> List<V> listObjs(Function<? super Object, V> mapper) {
-        return this.listObjs(Wrappers.emptyWrapper(), mapper);
+        return this.listObjs(null, mapper);
     }
 
-    default List<Object> listObjs(Wrapper<D> queryWrapper) {
-        return this.listObjs(queryWrapper, Function.identity());
+    default List<Object> listObjs(D dto) {
+        return this.listObjs(dto, Function.identity());
     }
 
-    <V> List<V> listObjs(Wrapper<D> var1, Function<? super Object, V> var2);
+    <V> List<V> listObjs(D dto, Function<? super Object, V> var2);
 
-    IPage<Map<String, Object>> pageMaps(IPage<D> var1, Wrapper<D> var2);
+    IPage<Map<String, Object>> pageMaps(IPage<D> var1, D dto);
 
     default IPage<Map<String, Object>> pageMaps(IPage<D> page) {
-        return this.pageMaps(page, Wrappers.emptyWrapper());
+        return this.pageMaps(page, null);
     }
 
     BaseMapper<E> getBaseMapper();

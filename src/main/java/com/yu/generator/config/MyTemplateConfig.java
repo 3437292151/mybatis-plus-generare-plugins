@@ -2,6 +2,7 @@ package com.yu.generator.config;
 
 import com.baomidou.mybatisplus.generator.config.TemplateConfig;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @Auther: yuchanglong
@@ -9,6 +10,7 @@ import lombok.Data;
  * @Description:
  */
 @Data
+@Accessors(chain = true)
 public class MyTemplateConfig extends TemplateConfig {
 
     private String mapper = MyConstVal.TEMPLATE_MAPPER;

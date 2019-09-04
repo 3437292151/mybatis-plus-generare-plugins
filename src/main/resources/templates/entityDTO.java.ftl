@@ -1,13 +1,10 @@
-package ${package.Service}.dto;
+package ${package.DTO};
 
-<#list table.importPackages as pkg>
+<#list dtoTable.importPackages as pkg>
 <#if (pkg!"defaultValue") != "java.io.Serializable">
 import ${pkg};
 </#if>
 </#list>
-<#if cfg.superDtoClass??>
-import ${cfg.superDtoClassPackage}.${cfg.superDtoClass};
-</#if>
 <#if swagger2>
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,7 +17,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * ${table.comment!}
+ * ${dtoTable.comment!}
  * </p>
  *
  * @author ${author}
@@ -28,7 +25,7 @@ import lombok.experimental.Accessors;
  */
 <#if entityLombokModel>
 @Data
-    <#if cfg.superDtoClass??>
+    <#if superEntityDTOClass??>
 @EqualsAndHashCode(callSuper = true)
     <#else>
 @EqualsAndHashCode(callSuper = false)
@@ -36,27 +33,27 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 </#if>
 <#if swagger2>
-@ApiModel(value="${entity}DTO对象", description="${table.comment!}")
+@ApiModel(value="${entityDTO}对象", description="${dtoTable.comment!}")
 </#if>
-<#if cfg.superDtoClass??>
-public class ${entity}DTO extends ${cfg.superDtoClass}<#if activeRecord><${entity}DTO></#if> {
+<#if superEntityDTOClass??>
+public class ${entityDTO} extends ${superEntityDTOClass}<#if activeRecord><${entityDTO}></#if> {
 <#elseif activeRecord>
-public class ${entity}DTO extends Model<${entity}DTO> {
+public class ${entityDTO} extends Model<${entityDTO}> {
 <#else>
-public class ${entity}DTO {
+public class ${entityDTO} {
 </#if>
 
 <#if entitySerialVersionUID>
     private static final long serialVersionUID = 1L;
 </#if>
 <#-- ----------  BEGIN 字段循环遍历  ---------->
-<#list table.fields as field>
+<#list dtoTable.fields as field>
     private ${field.propertyType} ${field.propertyName};
 </#list>
 <#------------  END 字段循环遍历  ---------->
 
 <#if !entityLombokModel>
-    <#list table.fields as field>
+    <#list dtoTable.fields as field>
         <#if field.propertyType == "boolean">
             <#assign getprefix="is"/>
         <#else>
@@ -67,7 +64,7 @@ public class ${entity}DTO {
     }
 
     <#if entityBuilderModel>
-    public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
+    public ${entityDTO} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     <#else>
     public void set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     </#if>
@@ -80,7 +77,7 @@ public class ${entity}DTO {
 </#if>
 
 <#if entityColumnConstant>
-    <#list table.fields as field>
+    <#list dtoTable.fields as field>
     public static final String ${field.name?upper_case} = "${field.name}";
 
     </#list>
@@ -100,7 +97,7 @@ public class ${entity}DTO {
     @Override
     public String toString() {
         return "${entity}{" +
-    <#list table.fields as field>
+    <#list dtoTable.fields as field>
         <#if field_index==0>
             "${field.propertyName}=" + ${field.propertyName} +
         <#else>
