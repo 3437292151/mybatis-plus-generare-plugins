@@ -103,6 +103,13 @@ public class MyConfigBuilder extends ConfigBuilder {
 
             List<TableField> fields = new ArrayList<>();
             List<TableField> commonFields = new ArrayList<>();
+            e.getCommonFields().stream().filter(f -> org.apache.commons.lang.StringUtils.equals(f.getName(),"id")).forEach(f -> {
+                if (superDtoColumns.contains(f.getName())){
+                    commonFields.add(f);
+                }else {
+                    fields.add(f);
+                }
+            });
             e.getFields().forEach(f -> {
                 if (superDtoColumns.contains(f.getName())){
                     commonFields.add(f);
@@ -110,11 +117,13 @@ public class MyConfigBuilder extends ConfigBuilder {
                     fields.add(f);
                 }
             });
-            e.getCommonFields().forEach(f -> {
-                if (superDtoColumns.contains(f.getName())){
-                    commonFields.add(f);
-                }else {
-                    fields.add(f);
+            e.getCommonFields().stream().forEach(f -> {
+                if (!org.apache.commons.lang.StringUtils.equals(f.getName(), "id")){
+                    if (superDtoColumns.contains(f.getName())){
+                        commonFields.add(f);
+                    }else {
+                        fields.add(f);
+                    }
                 }
             });
             tableInfo.setFields(fields);
@@ -135,6 +144,13 @@ public class MyConfigBuilder extends ConfigBuilder {
      **/
     private void getTablesInfo(GlobalConfig globalConfig) {
         this.getTableInfoList().forEach(e -> {
+            Optional.ofNullable(e.getCommonFields()).orElse(new ArrayList<>()).forEach(f -> {
+                if (org.apache.commons.lang.StringUtils.equals(f.getName(), "id")){
+                    e.setFieldNames(f.getName() + ", " + e.getFieldNames());
+                }else {
+                    e.setFieldNames(e.getFieldNames() + ", " + f.getName());
+                }
+            });
             if (StringUtils.isNotEmpty(globalConfig.getMapperName())) {
                 e.setMapperName(String.format(globalConfig.getMapperName(), e.getEntityName()));
             } else {

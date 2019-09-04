@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * ${dtoTable.comment!}
+ * ${dtoTable.comment!} DTO
  * </p>
  *
  * @author ${author}
@@ -49,9 +49,9 @@ public class ${entityDTO} {
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list dtoTable.fields as field>
     private ${field.propertyType} ${field.propertyName};
+
 </#list>
 <#------------  END 字段循环遍历  ---------->
-
 <#if !entityLombokModel>
     <#list dtoTable.fields as field>
         <#if field.propertyType == "boolean">

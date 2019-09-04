@@ -30,6 +30,10 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Contract for a common service implement.
+ *
+ */
 public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMapper<D, E>, D, E extends PrimaryKey> implements BaseService<D, E> {
     protected Log log = LogFactory.getLog(this.getClass());
 

@@ -7,6 +7,7 @@ import ${package.Service}.${table.serviceName};
 import ${package.Controller}.util.HeaderUtil;
 import ${package.Controller}.util.MybatisPaginationUtil;
 import lombok.extern.slf4j.Slf4j;
+import com.codahale.metrics.annotation.Timed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,13 +27,13 @@ import ${superControllerClassPackage};
 </#if>
 
 /**
-* <p>
-    * ${table.comment!} 前端控制器
-    * </p>
-*
-* @author ${author}
-* @since ${date}
-*/
+ * <p>
+ * ${table.comment!} 前端控制器
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
 <#if restControllerStyle>
 @RestController
 <#else>
@@ -54,9 +55,10 @@ public class ${table.controllerName} {
     private ${table.serviceName} targetService;
 
     /**
-     * 添加${table.comment!}数据
+     * 添加[${table.comment!}]数据
      */
     @PostMapping(value = "/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
+    @Timed
     public ResponseEntity<${entityDTO}> create${entity}(@RequestBody ${entity}DTO ${entityDTO?uncap_first})throws URISyntaxException {
         log.info("create${entity}() REST request to create ${entity} : {}", ${entityDTO?uncap_first});
         ${entityDTO} result = targetService.save(${entityDTO?uncap_first});
@@ -66,9 +68,10 @@ public class ${table.controllerName} {
     }
 
     /**
-     * 更新${table.comment!}数据
+     * 更新[${table.comment!}]数据
      */
     @PutMapping(value = "/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>")
+    @Timed
     public ResponseEntity<${entityDTO}> update${entity}(@RequestBody ${entityDTO} ${entityDTO?uncap_first})throws URISyntaxException {
         log.info("update${entity}() REST request to create ${entity} : {}", ${entityDTO?uncap_first});
         ${entity}DTO result = targetService.saveOrUpdate(${entityDTO?uncap_first});
@@ -78,9 +81,10 @@ public class ${table.controllerName} {
     }
 
     /**
-    * 获取${table.comment!}数据列表
+    * 获取[${table.comment!}]数据列表
     */
     @GetMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>s")
+    @Timed
     public ResponseEntity<List<${entityDTO}>> get${entity}ByCriteria(${entityDTO} ${entityDTO?uncap_first}, @PageableDefault(page = 0, size = 20, sort = {"updDt"}, direction = Sort.Direction.DESC) Pageable pageable){
         log.info("get${entity}ByCriteria() Rest request to GET a page of ${entity}s param ：{}; pageable: {}", ${entityDTO?uncap_first}, pageable);
 
@@ -91,9 +95,10 @@ public class ${table.controllerName} {
 
 
     /**
-    * 根据ID查找${table.comment!}数据
+    * 根据ID查找[${table.comment!}]数据
     */
-    @GetMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/<#if true>$</#if>{id}")
+    @GetMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/{id}")
+    @Timed
     public ResponseEntity<${entityDTO}> get${entity}ById(@PathVariable String id){
         log.info("get${entity}ById() Rest request to GET ${entity} by id ：{};", id);
         ${entityDTO} result = targetService.getById(id);
@@ -102,9 +107,10 @@ public class ${table.controllerName} {
 
 
     /**
-    * 删除${table.comment!}数据通过id数组
+    * 删除[${table.comment!}]数据通过id数组
     */
     @DeleteMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>s/ids")
+    @Timed
     public ResponseEntity<Void> delete${entity}ByIds(@RequestBody List<String> ids){
         log.debug("delete${entity}ByIds() REST request to delete ${entity}s : {}", ids);
         boolean isOk = targetService.removeByIds(ids);
@@ -112,9 +118,10 @@ public class ${table.controllerName} {
     }
 
     /**
-     * 删除${table.comment!}数据通过id
+     * 删除[${table.comment!}]数据通过id
      */
-    @DeleteMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/<#if true>$</#if>{id}")
+    @DeleteMapping("/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}<#else>${table.entityPath}</#if>/{id}")
+    @Timed
     public ResponseEntity<Void> delete${entity}ById(@PathVariable String id){
         log.debug("delete${entity}ById() REST request to delete ${entity} : {}", id);
         boolean isOk = targetService.removeById(id);

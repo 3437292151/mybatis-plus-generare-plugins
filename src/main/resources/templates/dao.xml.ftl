@@ -15,7 +15,7 @@
 </#if>
 </#list>
 <#list table.commonFields as field><#--生成公共字段 -->
-    <result column="${field.name}" property="${field.propertyName}" />
+        <result column="${field.name}" property="${field.propertyName}" />
 </#list>
 <#list table.fields as field>
 <#if !field.keyFlag><#--生成普通字段 -->
@@ -28,9 +28,6 @@
 <#if baseColumnList>
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-<#list table.commonFields as field>
-        ${field.name},
-</#list>
         ${table.fieldNames}
     </sql>
 

@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
-* Contract for a common service interface.
-*
-*/
+ * Contract for a common service interface.
+ *
+ */
 public interface BaseService<D, E extends PrimaryKey> {
 
     D save(D var1);

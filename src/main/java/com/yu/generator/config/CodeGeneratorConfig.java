@@ -238,56 +238,54 @@ public class CodeGeneratorConfig {
        // 策略配置
        StrategyConfig strategy = new MyStrategyConfig();
        Set<String> propertyNames = properties.stringPropertyNames();
-       for (String propertyName : propertyNames){
-           if( propertyName.startsWith("sc")){
-               String property = properties.getProperty(propertyName);
-
-               if (StringUtils.isBlank(property)){
-                   continue;
-               }
-               if (StringUtils.equals(propertyName, "sc.tablePrefix")){
-                   strategy.setTablePrefix(property.split(","));
-                   continue;
-               }
-               if (StringUtils.equals(propertyName, "sc.fieldPrefix")){
-                   strategy.setFieldPrefix(property.split(","));
-                   continue;
-               }
-               // 写于父类中的公共字段
-               if (StringUtils.equals(propertyName, "sc.superEntityColumns")){
-                   strategy.setSuperEntityColumns(property.split(","));
-                   continue;
-               }
-               if (StringUtils.equals(propertyName, "sc.include")){
-                   strategy.setInclude(property.split(","));
-                   continue;
-               }
-               if (StringUtils.equals(propertyName, "sc.exclude")){
-                   strategy.setExclude(property.split(","));
-               }
-               if (StringUtils.equals(propertyName, "sc.nameConvert")){
-                   propertyName = propertyName.replace("sc.", "");
-                   try {
-                       Class obj=Class.forName(property);
-                       //找到类的构造方法
-                       Constructor constructor = obj.getDeclaredConstructor();
-                       //使用找到的构造方法创建实例
-                       Object instance = constructor.newInstance();
-                       ObjectUtil.setEntity(strategy, propertyName, instance);
-                   } catch (Exception e) {
-                       log.info(e);
-                   }
-               }
-               propertyName = propertyName.replace("sc.", "");
-               if (StringUtils.equals(property, "true") || StringUtils.equals(property, "false")){
-                   ObjectUtil.setEntity(strategy, propertyName, Boolean.valueOf(property));
-                   continue;
-               }
-               if (StringUtils.equals("superDtoClass", propertyName) || StringUtils.equals("superEntityMapperClass",propertyName))continue;
-               ObjectUtil.setEntity(strategy, propertyName, property);
+       List<String> propertyNameList = propertyNames.stream().filter(e -> e.startsWith("sc")).collect(Collectors.toList());
+       for (String propertyName : propertyNameList){
+           String property = properties.getProperty(propertyName);
+           if (StringUtils.isBlank(property)){
+               continue;
            }
+           if (StringUtils.equals(propertyName, "sc.tablePrefix")){
+               strategy.setTablePrefix(property.split(","));
+               continue;
+           }
+           if (StringUtils.equals(propertyName, "sc.fieldPrefix")){
+               strategy.setFieldPrefix(property.split(","));
+               continue;
+           }
+           // 写于父类中的公共字段
+           if (StringUtils.equals(propertyName, "sc.superEntityColumns")){
+               strategy.setSuperEntityColumns(property.split(","));
+               continue;
+           }
+           if (StringUtils.equals(propertyName, "sc.include")){
+               strategy.setInclude(property.split(","));
+               continue;
+           }
+           if (StringUtils.equals(propertyName, "sc.exclude")){
+               strategy.setExclude(property.split(","));
+           }
+           if (StringUtils.equals(propertyName, "sc.nameConvert")){
+               propertyName = propertyName.replace("sc.", "");
+               try {
+                   Class obj=Class.forName(property);
+                   //找到类的构造方法
+                   Constructor constructor = obj.getDeclaredConstructor();
+                   //使用找到的构造方法创建实例
+                   Object instance = constructor.newInstance();
+                   ObjectUtil.setEntity(strategy, propertyName, instance);
+               } catch (Exception e) {
+                   log.info(e);
+               }
+           }
+           propertyName = propertyName.replace("sc.", "");
+           if (StringUtils.equals(property, "true") || StringUtils.equals(property, "false")){
+               ObjectUtil.setEntity(strategy, propertyName, Boolean.valueOf(property));
+               continue;
+           }
+           if (StringUtils.equals("superDtoClass", propertyName) || StringUtils.equals("superEntityMapperClass",propertyName))continue;
+           ObjectUtil.setEntity(strategy, propertyName, property);
        }
-       List<String> naming = propertyNames.stream().filter(e -> StringUtils.equals(e, "sc.naming")).collect(Collectors.toList());
+       List<String> naming = propertyNameList.stream().filter(e -> StringUtils.equals(e, "sc.naming")).collect(Collectors.toList());
        if (naming.isEmpty()){
            strategy.setNaming(NamingStrategy.underline_to_camel);
        }else {
@@ -297,7 +295,7 @@ public class CodeGeneratorConfig {
                strategy.setNaming(NamingStrategy.underline_to_camel);
            }
        }
-       List<String> columnNaming = propertyNames.stream().filter(e -> StringUtils.equals(e, "sc.columnNaming")).collect(Collectors.toList());
+       List<String> columnNaming = propertyNameList.stream().filter(e -> StringUtils.equals(e, "sc.columnNaming")).collect(Collectors.toList());
        if (columnNaming.isEmpty()){
            strategy.setColumnNaming(NamingStrategy.underline_to_camel);
        }else {
@@ -308,7 +306,7 @@ public class CodeGeneratorConfig {
            }
        }
        //lombok是有使用
-       List<String> EntityLombokModel = propertyNames.stream().filter(e -> StringUtils.equals(e, "sc.entityLombokModel")).collect(Collectors.toList());
+       List<String> EntityLombokModel = propertyNameList.stream().filter(e -> StringUtils.equals(e, "sc.entityLombokModel")).collect(Collectors.toList());
        if (EntityLombokModel.isEmpty()){
            strategy.setEntityLombokModel(true);
        }else {
@@ -316,11 +314,19 @@ public class CodeGeneratorConfig {
        }
 
        //REST风格是否使用
-       List<String> RestControllerStyle = propertyNames.stream().filter(e -> StringUtils.equals(e, "sc.restControllerStyle")).collect(Collectors.toList());
+       List<String> RestControllerStyle = propertyNameList.stream().filter(e -> StringUtils.equals(e, "sc.restControllerStyle")).collect(Collectors.toList());
        if (EntityLombokModel.isEmpty()){
            strategy.setRestControllerStyle(true);
        }else {
            strategy.setRestControllerStyle(Boolean.getBoolean(RestControllerStyle.get(0)));
+       }
+
+       //REST风格是否使用
+       List<String> entitySerialVersionUID = propertyNameList.stream().filter(e -> StringUtils.equals(e, "sc.entitySerialVersionUID")).collect(Collectors.toList());
+       if (entitySerialVersionUID.isEmpty()){
+           strategy.setEntitySerialVersionUID(false);
+       }else {
+           strategy.setEntitySerialVersionUID(Boolean.getBoolean(entitySerialVersionUID.get(0)));
        }
        strategyConfig = strategy;
    }
