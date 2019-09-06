@@ -76,6 +76,7 @@ public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMap
         return SqlHelper.table(this.currentModelClass()).getSqlStatement(sqlMethod.getMethod());
     }
 
+    @Transactional
     public D save(D dto) {
         E entity = this.entityMapper.toEntity(dto);
         entity.setUUID().setTime();
@@ -158,25 +159,30 @@ public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMap
         return this.entityMapper.toDto(entityList);
     }
 
+    @Transactional
     public boolean removeById(Serializable id) {
         return SqlHelper.retBool(Integer.valueOf(this.baseMapper.deleteById(id)));
     }
 
+    @Transactional
     public boolean removeByMap(Map<String, Object> columnMap) {
         Assert.notEmpty(columnMap, "error: columnMap must not be empty", new Object[0]);
         return SqlHelper.retBool(Integer.valueOf(this.baseMapper.deleteByMap(columnMap)));
     }
 
+    @Transactional
     public boolean remove(D dto) {
         E entity = this.entityMapper.toEntity(dto);
         Wrapper<E> eWrapper = Wrappers.update(entity);
         return SqlHelper.retBool(Integer.valueOf(this.baseMapper.delete(eWrapper)));
     }
 
+    @Transactional
     public boolean removeByIds(List<? extends Serializable> idList) {
         return SqlHelper.retBool(Integer.valueOf(this.baseMapper.deleteBatchIds(idList)));
     }
 
+    @Transactional
     public D updateById(D dto) {
         E entity = this.entityMapper.toEntity(dto);
         entity.setUpdDt(LocalDateTime.now());
@@ -184,6 +190,7 @@ public class BaseServiceImpl<DAO extends BaseMapper<E>, Mapper extends EntityMap
         return dto;
     }
 
+    @Transactional
     public boolean update(D entity, Wrapper<D> updateWrapper) {
         E e = this.entityMapper.toEntity(entity);
         Wrapper<E> wrapper = Wrappers.update(this.entityMapper.toEntity(updateWrapper.getEntity()));
